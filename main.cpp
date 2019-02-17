@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -31,8 +32,7 @@ int main(int argc, char const *argv[]){
 	}
 
 	primeNumbers[1]=0;
-
-	bool spiral [width][width];
+	bool *spiral = new bool[width*width];
 	pair <int,int> point;
 
 	if(width%2==1) point = make_pair(width/2,width/2);
@@ -44,7 +44,7 @@ int main(int argc, char const *argv[]){
 	int spiralCount = 1;
 	int spiralCounter = 1;
 	for(int i = 1; i < range; i++){
-		spiral[point.first][point.second]=*primeNumbers;
+		spiral[point.first*width+point.second]=*primeNumbers;
 		
 		spiralCounter--;
 		if(spiralCounter==0&&(state%4==1||state%4==3)) spiralCount++;
@@ -57,13 +57,23 @@ int main(int argc, char const *argv[]){
 		if(!spiralCounter) {spiralCounter=spiralCount; state++;}
 		primeNumbers++;
 	}
+	primeNumbers-=range;
+	delete[] primeNumbers;
+
+	ofstream img ("picture.ppm");
+	img << "P3" << "\n";
+	img << width << " " << width << "\n";
+	img << "255" << "\n";
 
 	for(int i = 0; i<width; i++){
 		for(int j = 0; j<width; j++){
-			cout << spiral[j][i] << " ";
+			int a = !spiral[j*width+i];
+			img << 255*a << " " << 255*a << " " << 255*a << "\n";
 		}
-		cout << "\n";
 	}
 	
+	delete [] spiral;
+
 	return 0;
+
 }
